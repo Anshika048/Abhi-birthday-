@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Happy Birthday Abhilash!</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+	<link href="https://fonts.googleapis.com/css?family=Signika:400,700" rel="stylesheet">
+	<style>
+		/* =========================================
+		   1. RED & BLACK SHINING THEME
+		   ========================================= */
+		* {
+			box-sizing: border-box;
+		}
+		body {
+			background-color: #030001;
+			color: #fff;
+			font-family: 'Signika', sans-serif;
+			overflow-x: hidden;
+			min-height: 100vh;
+			transition: background 1.5s ease;
+			padding-bottom: 120px;
+		}
+
+		/* Lights Toggle State */
+		body.lights-on {
+			background: radial-gradient(circle at center, #5a000e 0%, #1f0004 60%, #000000 100%);
+		}
+		body.lights-on::before {
+			content: '';
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 800px;
+			height: 800px;
+			background: radial-gradient(circle, rgba(255, 0, 51, 0.3) 0%, rgba(0,0,0,0) 70%);
+			pointer-events: none;
+			z-index: 0;
+			animation: pulseGlow 3s infinite alternate;
+		}
+		@keyframes pulseGlow {
+			0% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.9); }
+			100% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+		}
+
+		/* =========================================
+		   2. INTRO: SEQUENTIAL ONE-BY-ONE BALLOONS
+		   ========================================= */
+		#intro-screen {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100vw;
+			height: 100vh;
+			background: #000000;
+			z-index: 999999;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			padding: 20px;
+			touch-action: manipulation;
+		}
+		#intro-screen.hidden {
+			display: none !important;
+			opacity: 0;
+			visibility: hidden;
+			pointer-events: none;
+		}
+		.skip-btn {
+			position: absolute;
+			top: 20px;
+			right: 20px;
+			background: rgba(255, 255, 255, 0.2);
+			border: 1px solid #ff3355;
+			color: #fff;
+			padding: 10px 20px;
+			border-radius: 20px;
+			font-size: 1rem;
+			cursor: pointer;
+			z-index: 1000000;
+			pointer-events: auto;
+		}
+		.skip-btn:hover {
+			background: #ff0033;
+		}
+		.intro-title {
+			color: #ff3355;
+			font-size: 2.2rem;
+			margin-bottom: 10px;
+			text-shadow: 0 0 15px #ff0033;
+			text-align: center;
+		}
+		.intro-subtitle {
+			color: #cccccc;
+			font-size: 1.1rem;
+			margin-bottom: 35px;
+			text-align: center;
+		}
+		.single-balloon-stage {
+			position: relative;
+			width: 150px;
+			height: 200px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			z-index: 1000001;
+		}
+		.pop-balloon {
+			width: 120px;
+			height: 150px;
+			border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-weight: bold;
+			font-size: 2.5rem;
+			color: #ffffff;
+			cursor: pointer;
+			user-select: none;
+			box-shadow: 0 0 25px rgba(255, 255, 255, 0.4);
+			position: relative;
+			animation: floatBounce 2s infinite ease-in-out;
+			pointer-events: auto;
+			touch-action: manipulation;
+		}
+		.pop-balloon::after {
+			content: '';
+			position: absolute;
+			bottom: -20px;
+			width: 2px;
+			height: 22px;
+			background: rgba(255, 255, 255, 0.7);
+		}
+		.pop-balloon.popping {
+			animation: popAnim 0.2s forwards ease-out !important;
+		}
+
+		@keyframes floatBounce {
+			0%, 100% { transform: translateY(0); }
+			50% { transform: translateY(-15px); }
+		}
+		@keyframes popAnim {
+			0% { transform: scale(1); opacity: 1; }
+			50% { transform: scale(1.3); opacity: 0.7; }
+			100% { transform: scale(1.8); opacity: 0; }
+		}
+
+		/* =========================================
+		   3. BULBS LIGHTING & BANNER
+		   ========================================= */
+		.bulb-holder {
+			text-align: center;
+			padding-top: 10px;
+		}
+		.bulb {
+			width: 24px;
+			height: 24px;
+			margin: 0 auto;
+			border-radius: 50%;
+			background: #333;
+			transition: background 0.5s ease, box-shadow 0.5s ease;
+		}
+		body.lights-on #bulb_yellow { background: #ffeb3b; box-shadow: 0 0 15px #ffeb3b; }
+		body.lights-on #bulb_red { background: #f44336; box-shadow: 0 0 15px #f44336; }
+		body.lights-on #bulb_blue { background: #2196f3; box-shadow: 0 0 15px #2196f3; }
+		body.lights-on #bulb_green { background: #4caf50; box-shadow: 0 0 15px #4caf50; }
+		body.lights-on #bulb_pink { background: #e91e63; box-shadow: 0 0 15px #e91e63; }
+		body.lights-on #bulb_orange { background: #ff9800; box-shadow: 0 0 15px #ff9800; }
+
+		.banner-container {
+			margin-top: 20px;
+			display: none;
+			animation: fadeIn 1s forwards;
+		}
+		.banner-text {
+			font-size: 2.5rem;
+			color: #ff1a40;
+			text-shadow: 0 0 20px #ff0033;
+			font-weight: bold;
+		}
+
+		/* Floating Background Balloons */
+		.flying-balloon-container {
+			position: fixed;
+			width: 100%;
+			height: 100%;
+			top: 0;
+			left: 0;
+			overflow: hidden;
+			pointer-events: none;
+			z-index: 1;
+		}
+		.silver-red-balloon {
+			position: absolute;
+			bottom: -100px;
+			width: 32px; 
+			height: 42px;
+			border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+			background: radial-gradient(circle at 30% 25%, #ffffff 0%, #e6e6e6 12%, #cc0029 35%, #50000f 100%);
+			box-shadow: inset -2px -2px 6px rgba(0,0,0,0.6), 0 0 12px rgba(255, 255, 255, 0.4);
+			animation: floatUp 7s linear infinite;
+		}
+		@keyframes floatUp {
+			0% { transform: translateY(0) rotate(0deg); opacity: 0.95; }
+			100% { transform: translateY(-120vh) rotate(15deg); opacity: 0; }
+		}
+
+		/* =========================================
+		   4. RED VELVET CAKE & CANDLE
+		   ========================================= */
+		.cake-cover {
+			display: none;
+			margin-top: 20px;
+			margin-bottom: 20px;
+			animation: fadeIn 1s forwards;
+		}
+		@keyframes fadeIn {
+			from { opacity: 0; transform: translateY(20px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+		.cake-container {
+			position: relative;
+			width: 180px;
+			height: 140px;
+			margin: 0 auto;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: flex-end;
+		}
+		
+		.candle {
+			position: relative;
+			width: 10px;
+			height: 35px;
+			background: linear-gradient(to right, #ffffff, #d9d9d9);
+			border-radius: 3px;
+			z-index: 3;
+			margin-bottom: -2px;
+		}
+		.flame {
+			position: absolute;
+			top: -16px;
+			left: 50%;
+			transform: translateX(-50%);
+			width: 10px;
+			height: 18px;
+			background: radial-gradient(ellipse at bottom, #fffa8b 0%, #ff9900 60%, rgba(255,0,0,0) 100%);
+			border-radius: 50% 50% 20% 20%;
+			box-shadow: 0 0 10px #ff9900, 0 0 18px #ff3300;
+			animation: flicker 0.2s infinite alternate;
+		}
+		.flame.blown-out {
+			display: none;
+		}
+		.smoke {
+			display: none;
+			position: absolute;
+			top: -20px;
+			left: 50%;
+			transform: translateX(-50%);
+			width: 6px;
+			height: 20px;
+			background: rgba(220, 220, 220, 0.5);
+			border-radius: 10px;
+			filter: blur(2px);
+		}
+		.flame.blown-out + .smoke {
+			display: block;
+			animation: smokeRise 2s forwards;
+		}
+
+		@keyframes flicker {
+			0% { transform: translateX(-50%) scale(1); }
+			100% { transform: translateX(-50%) scale(1.15) rotate(2deg); }
+		}
+		@keyframes smokeRise {
+			0% { opacity: 0.8; transform: translateX(-50%) translateY(0) scale(1); }
+			100% { opacity: 0; transform: translateX(-50%) translateY(-25px) scale(2); }
+		}
+
+		/* Cake Layers */
+		.cake-layer { width: 100%; border-radius: 6px 6px 0 0; }
+		.layer-top {
+			height: 30px; width: 130px; background: #7a0016;
+			border-top: 5px solid #fff5f6; box-shadow: inset 0 -3px 0 #4a000e;
+		}
+		.layer-middle {
+			height: 30px; width: 155px; background: #7a0016;
+			border-top: 4px solid #fff5f6; box-shadow: inset 0 -3px 0 #4a000e;
+		}
+		.layer-bottom {
+			height: 30px; width: 180px; background: #7a0016;
+			border-top: 4px solid #fff5f6; box-shadow: 0 6px 15px rgba(0,0,0,0.8), inset 0 -3px 0 #4a000e;
+		}
+
+		/* =========================================
+		   5. DANCING TEDDY BEAR (GIF STYLE DANCE)
+		   ========================================= */
+		.teddy-wrapper {
+			margin-top: 15px;
+			margin-bottom: 15px;
+			display: none; /* Hidden initially, shown on message start */
+			justify-content: center;
+			align-items: center;
+			z-index: 10;
+			position: relative;
+		}
+		.teddy-wrapper.active {
+			display: flex;
+			animation: fadeIn 0.8s ease-in forwards;
+		}
+
+		.teddy-bear {
+			position: relative;
+			width: 100px;
+			height: 120px;
+			transform-origin: bottom center;
+			animation: gifBodyGroove 0.7s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
+		}
+
+		.teddy-head {
+			position: absolute;
+			top: 0; left: 20px;
+			width: 60px; height: 52px;
+			background: #e2688c;
+			border: 3px solid #000;
+			border-radius: 50%;
+			z-index: 5;
+			transform-origin: bottom center;
+			animation: gifHeadTilt 0.7s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
+		}
+		.teddy-ear {
+			position: absolute;
+			top: -6px; width: 22px; height: 22px;
+			background: #e2688c; border: 3px solid #000; border-radius: 50%;
+		}
+		.teddy-ear.left { left: -4px; }
+		.teddy-ear.right { right: -4px; }
+		.teddy-ear-inner {
+			position: absolute;
+			top: 3px; left: 3px;
+			width: 10px; height: 10px;
+			background: #ffffff; border-radius: 50%;
+		}
+
+		.teddy-snout {
+			position: absolute;
+			bottom: 3px; left: 12px;
+			width: 30px; height: 22px;
+			background: #ffffff; border: 2px solid #000; border-radius: 50%;
+		}
+		.teddy-nose {
+			position: absolute;
+			top: 3px; left: 9px;
+			width: 8px; height: 6px;
+			background: #401a08; border-radius: 50%;
+		}
+		.teddy-eye {
+			position: absolute;
+			top: 16px; width: 12px; height: 5px;
+			border-top: 3px solid #000;
+			border-radius: 50%;
+		}
+		.teddy-eye.left { left: 10px; }
+		.teddy-eye.right { right: 10px; }
+
+		.teddy-body {
+			position: absolute;
+			top: 44px; left: 22px;
+			width: 56px; height: 60px;
+			background: #e2688c;
+			border: 3px solid #000;
+			border-radius: 50% 50% 45% 45%;
+			z-index: 3;
+		}
+		.teddy-belly {
+			position: absolute;
+			top: 12px; left: 11px;
+			width: 28px; height: 32px;
+			background: #ffffff; border-radius: 50%;
+		}
+
+		.teddy-arm {
+			position: absolute;
+			top: 48px; width: 20px; height: 30px;
+			background: #e2688c; border: 3px solid #000; border-radius: 12px;
+			z-index: 4; transform-origin: top center;
+		}
+		.teddy-arm.left {
+			left: 6px;
+			animation: gifArmDanceLeft 0.7s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
+		}
+		.teddy-arm.right {
+			right: 6px;
+			animation: gifArmDanceRight 0.7s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
+		}
+
+		.teddy-leg {
+			position: absolute;
+			bottom: 0px; width: 24px; height: 20px;
+			background: #e2688c; border: 3px solid #000; border-radius: 50%;
+			z-index: 2;
+		}
+		.teddy-leg.left { left: 18px; }
+		.teddy-leg.right { right: 18px; }
+
+		/* GIF-Style Dance Keyframes */
+		@keyframes gifBodyGroove {
+			0% { transform: translateY(0) rotate(-10deg) scaleX(0.95); }
+			50% { transform: translateY(-8px) rotate(0deg) scaleY(1.05); }
+			100% { transform: translateY(0) rotate(10deg) scaleX(0.95); }
+		}
+		@keyframes gifHeadTilt {
+			0% { transform: rotate(12deg); }
+			100% { transform: rotate(-12deg); }
+		}
+		@keyframes gifArmDanceLeft {
+			0% { transform: rotate(40deg) translateY(-2px); }
+			100% { transform: rotate(-50deg) translateY(2px); }
+		}
+		@keyframes gifArmDanceRight {
+			0% { transform: rotate(-50deg) translateY(2px); }
+			100% { transform: rotate(40deg) translateY(-2px); }
+		}
+
+		/* =========================================
+		   6. HORIZONTAL MESSAGE LINE
+		   ========================================= */
+		.message-wrapper {
+			margin-top: 15px;
+			position: relative;
+			min-height: 75px;
+			z-index: 10;
+		}
+		
+		.message-line-frame {
+			position: relative;
+			width: 90%;
+			max-width: 750px;
+			height: 70px;
+			margin: 0 auto;
+			border-top: 2px solid #ff1a40;
+			border-bottom: 2px solid #ff1a40;
+			box-shadow: 0 0 15px rgba(255, 0, 51, 0.4);
+			background: rgba(15, 0, 3, 0.7);
+			border-radius: 8px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			overflow: hidden;
+			opacity: 0;
+			visibility: hidden;
+			transition: opacity 0.5s ease, visibility 0.5s ease;
+		}
+
+		.message-line-frame.visible {
+			opacity: 1;
+			visibility: visible;
+		}
+
+		.story-line {
+			font-size: 1.8rem;
+			font-weight: 700;
+			color: #ffe6ea;
+			text-shadow: 0 0 12px #ff0033, 0 0 20px rgba(255, 0, 51, 0.8);
+			opacity: 0;
+			visibility: hidden;
+			transform: scale(0.85);
+			transition: opacity 0.6s ease, transform 0.6s ease, visibility 0.6s;
+			position: absolute;
+			text-align: center;
+			width: 95%;
+			margin: 0;
+		}
+		.story-line.active {
+			opacity: 1;
+			visibility: visible;
+			transform: scale(1);
+		}
+		.story-line strong {
+			color: #ff1a40;
+			font-size: 2.1rem;
+			text-transform: uppercase;
+			text-shadow: 0 0 20px #ff0033;
+		}
+
+		@media (max-width: 768px) {
+			.story-line { font-size: 1.3rem; }
+			.story-line strong { font-size: 1.5rem; }
+			.message-line-frame { height: 65px; }
+		}
+
+		/* Sequential Timeline Button at Bottom */
+		.navbar-fixed-bottom {
+			background: rgba(10, 0, 2, 0.95);
+			border-top: 1px solid #ff1a40;
+			padding: 15px 0;
+			z-index: 100;
+			min-height: 80px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		.btn-custom {
+			background: linear-gradient(135deg, #2a0007, #50000e);
+			color: #fff;
+			border: 1px solid #ff1a40;
+			border-radius: 25px;
+			font-weight: bold;
+			font-size: 1.2rem;
+			padding: 10px 24px;
+			box-shadow: 0 0 15px rgba(255, 0, 51, 0.5);
+			transition: all 0.3s ease;
+		}
+		.btn-custom:hover, .btn-custom:focus {
+			color: #fff;
+			background: #ff0033;
+			box-shadow: 0 0 22px #ff0033;
+			transform: translateY(-2deg);
+		}
+	</style>
+</head>
+
+<body>
+
+	<!-- AUDIO ELEMENTS FOR SONG 1 AND SONG 2 -->
+	<audio id="bg-music-1" loop preload="auto">
+		<source src="song1.mp3" type="audio/mpeg">
+	</audio>
+
+	<audio id="bg-music-2" loop preload="auto">
+		<source src="song2.mp3" type="audio/mpeg">
+	</audio>
+
+	<!-- 1. INTRO SCREEN -->
+	<div id="intro-screen">
+		<button class="skip-btn" id="skip-intro-btn">Skip Intro ⏩</button>
+		<h1 class="intro-title">Welcome Abhilash! 🎉</h1>
+		<p class="intro-subtitle" id="intro-status">Tap balloon 1 to start!</p>
+		<div class="single-balloon-stage">
+			<div class="pop-balloon" id="current-balloon">1</div>
+		</div>
+	</div>
+
+	<!-- FLOATING BACKGROUND BALLOONS -->
+	<div class="flying-balloon-container" id="flying-container"></div>
+
+	<!-- 2. MAIN CONTENT -->
+	<div class="container text-center">
+		
+		<!-- BULBS ROW -->
+		<div class="row">
+			<div class="col-xs-2 bulb-holder"><div class="bulb" id="bulb_yellow"></div></div>
+			<div class="col-xs-2 bulb-holder"><div class="bulb" id="bulb_red"></div></div>
+			<div class="col-xs-2 bulb-holder"><div class="bulb" id="bulb_blue"></div></div>
+			<div class="col-xs-2 bulb-holder"><div class="bulb" id="bulb_green"></div></div>
+			<div class="col-xs-2 bulb-holder"><div class="bulb" id="bulb_pink"></div></div>
+			<div class="col-xs-2 bulb-holder"><div class="bulb" id="bulb_orange"></div></div>
+		</div>
+
+		<!-- BANNER TEXT -->
+		<div class="row banner-container" id="banner-container">
+			<div class="col-md-12">
+				<h1 class="banner-text">Happy Birthday Abhilash!</h1>
+			</div>
+		</div>
+
+		<!-- RED VELVET CAKE -->
+		<div class="row cake-cover" id="cake-cover">
+			<div class="col-md-12">
+				<div class="cake-container">
+					<div class="candle">
+						<div class="flame" id="flame"></div>
+						<div class="smoke"></div>
+					</div>
+					<div class="cake-layer layer-top"></div>
+					<div class="cake-layer layer-middle"></div>
+					<div class="cake-layer layer-bottom"></div>
+				</div>
+			</div>
+		</div>
+
+		<!-- DANCING TEDDY BEAR (SHOWN WHEN MESSAGE STARTS) -->
+		<div class="row teddy-wrapper" id="teddy-wrapper">
+			<div class="teddy-bear">
+				<div class="teddy-head">
+					<div class="teddy-ear left"><div class="teddy-ear-inner"></div></div>
+					<div class="teddy-ear right"><div class="teddy-ear-inner"></div></div>
+					<div class="teddy-eye left"></div>
+					<div class="teddy-eye right"></div>
+					<div class="teddy-snout">
+						<div class="teddy-nose"></div>
+					</div>
+				</div>
+				<div class="teddy-body">
+					<div class="teddy-belly"></div>
+				</div>
+				<div class="teddy-arm left"></div>
+				<div class="teddy-arm right"></div>
+				<div class="teddy-leg left"></div>
+				<div class="teddy-leg right"></div>
+			</div>
+		</div>
+
+		<!-- HORIZONTAL WISHING MESSAGE LINE FRAME -->
+		<div class="row message-wrapper">
+			<div class="col-md-12">
+				<div class="message-line-frame" id="story-container">
+					<p class="story-line">Today is...</p>
+					<p class="story-line">as beautiful as other days</p>
+					<p class="story-line">but you realize</p>
+					<p class="story-line">another year has gone</p>
+					<p class="story-line">in a blink of the eyes</p>
+					<p class="story-line"><strong>however</strong></p>
+					<p class="story-line">Do you know..?</p>
+					<p class="story-line">today is just special</p>
+					<p class="story-line">so special to you</p>
+					<p class="story-line">that's why</p>
+					<p class="story-line">Let's make it...</p>
+					<p class="story-line">the best celebration ever</p>
+					<p class="story-line">and let me share...</p>
+					<p class="story-line">a piece of happiness to you</p>
+					<p class="story-line">I made all this...</p>
+					<p class="story-line">as a birthday present to you</p>
+					<p class="story-line">thanks for being there</p>
+					<p class="story-line">thanks for the friendship we made</p>
+					<p class="story-line">thanks for everything</p>
+					<p class="story-line">I wish you all the best</p>
+					<p class="story-line">May your life be at ease</p>
+					<p class="story-line">May all your wishes come true</p>
+					<p class="story-line">Remember</p>
+					<p class="story-line">your ambitions</p>
+					<p class="story-line">you live as a free bird...</p>
+					<p class="story-line">flying in the blue sky</p>
+					<p class="story-line">Now things are different...</p>
+					<p class="story-line">real story of your life</p>
+					<p class="story-line">is just about to begin</p>
+					<p class="story-line">indeed..</p>
+					<p class="story-line">but...</p>
+					<p class="story-line">don't worry</p>
+					<p class="story-line">because...</p>
+					<p class="story-line">God has your back</p>
+					<p class="story-line">and</p>
+					<p class="story-line">this year will be better</p>
+					<p class="story-line">and I hope</p>
+					<p class="story-line">you'll find...</p>
+					<p class="story-line">happiness along the way</p>
+					<p class="story-line">keep your spirit up</p>
+					<p class="story-line">enjoy every single moment...</p>
+					<p class="story-line">that you experience today</p>
+					<p class="story-line">fill it with your most beautiful smile</p>
+					<p class="story-line">and make it the best memory..</p>
+					<p class="story-line">lastly...</p>
+					<p class="story-line">I'd like to wish you one more time</p>
+					<p class="story-line"><strong>a very happy birthday Abhilash! 🎂</strong></p>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<!-- 3. TIMELINE SINGLE BUTTON AT BOTTOM -->
+	<div class="navbar navbar-fixed-bottom">
+		<div class="container text-center">
+			<button class="btn btn-custom" id="action-btn" onclick="nextStep()">Turn On Lights</button>
+		</div>
+	</div>
+
+	<script>
+		// --- 1. INTRO BALLOON POPPING ---
+		const introScreen = document.getElementById('intro-screen');
+		const balloonElem = document.getElementById('current-balloon');
+		const introStatus = document.getElementById('intro-status');
+		const skipBtn = document.getElementById('skip-intro-btn');
+		
+		let currentNumber = 1;
+		const totalBalloons = 21;
+		let isProcessingPop = false;
+
+		const balloonColors = [
+			'radial-gradient(circle at 35% 30%, #ff4d6d, #800016)',
+			'radial-gradient(circle at 35% 30%, #4da6ff, #003380)',
+			'radial-gradient(circle at 35% 30%, #ffcc00, #806600)',
+			'radial-gradient(circle at 35% 30%, #4dff88, #00802b)',
+			'radial-gradient(circle at 35% 30%, #cc66ff, #5900b3)',
+			'radial-gradient(circle at 35% 30%, #ff9933, #803d00)'
+		];
+
+		function setBalloonStyle(num) {
+			balloonElem.innerText = num;
+			balloonElem.style.background = balloonColors[(num - 1) % balloonColors.length];
+		}
+
+		setBalloonStyle(currentNumber);
+
+		function popCurrentBalloon(e) {
+			if (e) {
+				e.preventDefault();
+				e.stopPropagation();
+			}
+			if (isProcessingPop) return;
+			isProcessingPop = true;
+
+			balloonElem.classList.add('popping');
+
+			setTimeout(() => {
+				balloonElem.classList.remove('popping');
+				if (currentNumber < totalBalloons) {
+					currentNumber++;
+					setBalloonStyle(currentNumber);
+					introStatus.innerText = `Tap balloon ${currentNumber} of ${totalBalloons}!`;
+					isProcessingPop = false;
+				} else {
+					skipIntro();
+				}
+			}, 200);
+		}
+
+		balloonElem.addEventListener('click', popCurrentBalloon);
+		balloonElem.addEventListener('touchstart', popCurrentBalloon);
+
+		function skipIntro(e) {
+			if (e) e.stopPropagation();
+			introScreen.classList.add('hidden');
+		}
+
+		skipBtn.addEventListener('click', skipIntro);
+		skipBtn.addEventListener('touchstart', skipIntro);
+
+		// --- 2. TIMELINE SEQUENTIAL BUTTON CONTROLLER ---
+		let stepIndex = 0;
+		const actionBtn = document.getElementById('action-btn');
+
+		function nextStep() {
+			if (stepIndex === 0) {
+				toggleLights();
+				actionBtn.innerText = "Play Music 🎵";
+				stepIndex++;
+			} else if (stepIndex === 1) {
+				playSong1();
+				actionBtn.innerText = "Let's Decorate 🎉";
+				stepIndex++;
+			} else if (stepIndex === 2) {
+				showBanner();
+				actionBtn.innerText = "Fly Red & Silver Balloons 🎈";
+				stepIndex++;
+			} else if (stepIndex === 3) {
+				releaseBalloons();
+				actionBtn.innerText = "Delicious Velvet Cake 🎂";
+				stepIndex++;
+			} else if (stepIndex === 4) {
+				showCake();
+				actionBtn.innerText = "Blow Candle 🕯️";
+				stepIndex++;
+			} else if (stepIndex === 5) {
+				blowCandle();
+				actionBtn.innerText = "Happy Birthday Abhilash! ✨";
+				actionBtn.disabled = true;
+				stepIndex++;
+			}
+		}
+
+		// --- 3. LIGHTING CONTROL ---
+		function toggleLights() {
+			document.body.classList.add('lights-on');
+		}
+
+		// --- 4. BANNER CONTROL ---
+		function showBanner() {
+			document.getElementById('banner-container').style.display = 'block';
+		}
+
+		// --- 5. SONG PLAYER SYSTEM ---
+		function playSong1() {
+			const music1 = document.getElementById('bg-music-1');
+			music1.play().catch(e => console.log('Playback error:', e));
+		}
+
+		function playSong2AndPauseSong1() {
+			const music1 = document.getElementById('bg-music-1');
+			const music2 = document.getElementById('bg-music-2');
+
+			music1.pause();
+			music1.currentTime = 0;
+
+			music2.play().catch(e => console.log('Playback error:', e));
+		}
+
+		// --- 6. FLOATING RED & SILVER BALLOONS ---
+		function releaseBalloons() {
+			const flyingContainer = document.getElementById('flying-container');
+			for (let i = 0; i < 25; i++) {
+				const fb = document.createElement('div');
+				fb.className = 'silver-red-balloon';
+				
+				const leftPos = Math.random() * 95;
+				const delay = Math.random() * 3;
+				const duration = 5 + Math.random() * 4;
+
+				fb.style.left = `${leftPos}%`;
+				fb.style.animationDelay = `${delay}s`;
+				fb.style.animationDuration = `${duration}s`;
+
+				flyingContainer.appendChild(fb);
+			}
+		}
+
+		// --- 7. SHOW CAKE ---
+		let isCandleBlown = false;
+
+		function showCake() {
+			document.getElementById('cake-cover').style.display = 'block';
+		}
+
+		// --- 8. BLOW CANDLE, START SONG 2, SHOW TEDDY BEAR & ANIMATED STORY ---
+		function blowCandle() {
+			if (isCandleBlown) return;
+			isCandleBlown = true;
+
+			// Extinguish Flame
+			const flame = document.getElementById('flame');
+			flame.classList.add('blown-out');
+
+			// Switch Music to Song 2
+			playSong2AndPauseSong1();
+
+			// Reveal Teddy Bear & Start GIF Dance
+			const teddyWrapper = document.getElementById('teddy-wrapper');
+			teddyWrapper.classList.add('active');
+
+			// Show Message Line Frame
+			const storyContainer = document.getElementById('story-container');
+			storyContainer.classList.add('visible');
+
+			setTimeout(() => {
+				startStoryAnimation();
+			}, 500);
+		}
+
+		function startStoryAnimation() {
+			const storyLines = document.querySelectorAll('.story-line');
+			let index = 0;
+
+			function showNextLine() {
+				if (index > 0) {
+					storyLines[index - 1].classList.remove('active');
+				}
+
+				if (index < storyLines.length) {
+					storyLines[index].classList.add('active');
+					index++;
+
+					// Stop at the last line "a very happy birthday Abhilash! 🎂"
+					if (index < storyLines.length) {
+						setTimeout(showNextLine, 2200);
+					}
+				}
+			}
+
+			showNextLine();
+		}
+	</script>
+</body>
+</html>
