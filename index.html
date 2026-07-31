@@ -6,28 +6,89 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
 	<link href="https://fonts.googleapis.com/css?family=Signika:400,700" rel="stylesheet">
+	<!-- Canvas Confetti Library for Confetti & Golden Dust -->
+	<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 	<style>
 		/* =========================================
-		   1. RED & BLACK SHINING THEME
+		   1. THEME BASE (LIGHT vs DARK)
 		   ========================================= */
 		* {
 			box-sizing: border-box;
 		}
-		body {
+
+		/* Theme Toggle Button in Top Corner */
+		.theme-toggle-btn {
+			position: fixed;
+			top: 20px;
+			right: 20px;
+			z-index: 9999999;
+			background: #ffffff;
+			color: #111111;
+			border: 2px solid #ff1a40;
+			padding: 8px 16px;
+			border-radius: 20px;
+			font-weight: bold;
+			font-size: 0.9rem;
+			cursor: pointer;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+			transition: all 0.3s ease;
+		}
+		.theme-toggle-btn:hover {
+			transform: scale(1.05);
+		}
+
+		/* LIGHT MODE (s1#.html) */
+		body.light-mode {
+			background-color: #fcfcfc;
+			color: #333333;
+			font-family: 'Signika', sans-serif;
+			overflow-x: hidden;
+			min-height: 100vh;
+			transition: background 1.5s ease;
+			padding-bottom: 140px;
+		}
+		body.light-mode.lights-on {
+			background: radial-gradient(circle at center, #ffffff 0%, #ffe6eb 60%, #ffccd5 100%);
+		}
+		body.light-mode.lights-on::before {
+			content: '';
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 800px;
+			height: 800px;
+			background: radial-gradient(circle, rgba(255, 26, 64, 0.15) 0%, rgba(255,255,255,0) 70%);
+			pointer-events: none;
+			z-index: 0;
+			animation: pulseGlow 3s infinite alternate;
+		}
+		body.light-mode .intro-title { color: #d60029; text-shadow: 0 2px 5px rgba(214, 0, 41, 0.2); }
+		body.light-mode .intro-subtitle { color: #666666; }
+		body.light-mode #intro-screen { background: #ffffff; }
+		body.light-mode .skip-btn { background: #ff1a40; border-color: #e6002e; }
+		body.light-mode .banner-text { color: #d60029; text-shadow: 0 2px 10px rgba(214, 0, 41, 0.2); }
+		body.light-mode .message-line-frame { background: #ffffff; border-color: #ff1a40; }
+		body.light-mode .story-line { color: #cc0029; text-shadow: none; }
+		body.light-mode .navbar-fixed-bottom { background: #ffffff; border-color: #ffccd5; }
+		body.light-mode .btn-custom { background: linear-gradient(135deg, #ff1a40, #d60029); border: none; }
+		body.light-mode .chess-card, body.light-mode .ludo-card, body.light-mode .gift-wrapper { background: #ffffff; color: #333; }
+		body.light-mode .final-message-text { color: #d60029; text-shadow: none; }
+
+		/* DARK MODE (s2#.html) */
+		body.dark-mode {
 			background-color: #030001;
 			color: #fff;
 			font-family: 'Signika', sans-serif;
 			overflow-x: hidden;
 			min-height: 100vh;
 			transition: background 1.5s ease;
-			padding-bottom: 120px;
+			padding-bottom: 140px;
 		}
-
-		/* Lights Toggle State */
-		body.lights-on {
+		body.dark-mode.lights-on {
 			background: radial-gradient(circle at center, #5a000e 0%, #1f0004 60%, #000000 100%);
 		}
-		body.lights-on::before {
+		body.dark-mode.lights-on::before {
 			content: '';
 			position: fixed;
 			top: 50%;
@@ -40,13 +101,50 @@
 			z-index: 0;
 			animation: pulseGlow 3s infinite alternate;
 		}
+		body.dark-mode .intro-title { color: #ff3355; text-shadow: 0 0 15px #ff0033; }
+		body.dark-mode .intro-subtitle { color: #cccccc; }
+		body.dark-mode #intro-screen { background: #000000; }
+		body.dark-mode .skip-btn { background: rgba(255, 255, 255, 0.2); border-color: #ff3355; }
+		body.dark-mode .banner-text { color: #ff1a40; text-shadow: 0 0 20px #ff0033; }
+		body.dark-mode .message-line-frame { background: rgba(15, 0, 3, 0.7); border-color: #ff1a40; }
+		body.dark-mode .story-line { color: #ffe6ea; text-shadow: 0 0 12px #ff0033; }
+		body.dark-mode .navbar-fixed-bottom { background: rgba(10, 0, 2, 0.95); border-color: #ff1a40; }
+		body.dark-mode .btn-custom { background: linear-gradient(135deg, #2a0007, #50000e); border: 1px solid #ff1a40; }
+		body.dark-mode .chess-card { background: #1a0005; color: #fff; }
+		body.dark-mode .ludo-card { background: #110004; color: #fff; }
+		body.dark-mode .gift-wrapper { background: linear-gradient(135deg, #2b0008, #5c0011); color: #fff; }
+		body.dark-mode .final-message-text { color: #fff; text-shadow: 0 0 10px #ff1a40; }
+
 		@keyframes pulseGlow {
 			0% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.9); }
 			100% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
 		}
 
+		/* Floating Hearts / Bats Container */
+		.bat-container {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100vw;
+			height: 100vh;
+			pointer-events: none;
+			z-index: 2;
+			overflow: hidden;
+		}
+		.bat {
+			position: absolute;
+			font-size: 1.8rem;
+			opacity: 0.7;
+			animation: flyBat 12s linear infinite;
+		}
+		@keyframes flyBat {
+			0% { transform: translate(-10vw, 80vh) scale(0.5); }
+			50% { transform: translate(50vw, 20vh) scale(1.2); }
+			100% { transform: translate(110vw, -10vh) scale(0.7); }
+		}
+
 		/* =========================================
-		   2. INTRO: SEQUENTIAL ONE-BY-ONE BALLOONS
+		   2. INTRO: BALLOONS
 		   ========================================= */
 		#intro-screen {
 			position: fixed;
@@ -54,7 +152,6 @@
 			left: 0;
 			width: 100vw;
 			height: 100vh;
-			background: #000000;
 			z-index: 999999;
 			display: flex;
 			flex-direction: column;
@@ -73,8 +170,6 @@
 			position: absolute;
 			top: 20px;
 			right: 20px;
-			background: rgba(255, 255, 255, 0.2);
-			border: 1px solid #ff3355;
 			color: #fff;
 			padding: 10px 20px;
 			border-radius: 20px;
@@ -83,18 +178,12 @@
 			z-index: 1000000;
 			pointer-events: auto;
 		}
-		.skip-btn:hover {
-			background: #ff0033;
-		}
 		.intro-title {
-			color: #ff3355;
 			font-size: 2.2rem;
 			margin-bottom: 10px;
-			text-shadow: 0 0 15px #ff0033;
 			text-align: center;
 		}
 		.intro-subtitle {
-			color: #cccccc;
 			font-size: 1.1rem;
 			margin-bottom: 35px;
 			text-align: center;
@@ -120,7 +209,7 @@
 			color: #ffffff;
 			cursor: pointer;
 			user-select: none;
-			box-shadow: 0 0 25px rgba(255, 255, 255, 0.4);
+			box-shadow: 0 10px 20px rgba(255, 26, 64, 0.3);
 			position: relative;
 			animation: floatBounce 2s infinite ease-in-out;
 			pointer-events: auto;
@@ -132,7 +221,7 @@
 			bottom: -20px;
 			width: 2px;
 			height: 22px;
-			background: rgba(255, 255, 255, 0.7);
+			background: #d60029;
 		}
 		.pop-balloon.popping {
 			animation: popAnim 0.2s forwards ease-out !important;
@@ -151,56 +240,32 @@
 		/* =========================================
 		   3. BULBS LIGHTING & BANNER
 		   ========================================= */
-		.bulb-holder {
-			text-align: center;
-			padding-top: 10px;
-		}
+		.bulb-holder { text-align: center; padding-top: 10px; }
 		.bulb {
-			width: 24px;
-			height: 24px;
-			margin: 0 auto;
-			border-radius: 50%;
-			background: #333;
+			width: 24px; height: 24px; margin: 0 auto;
+			border-radius: 50%; background: #e0e0e0;
 			transition: background 0.5s ease, box-shadow 0.5s ease;
 		}
-		body.lights-on #bulb_yellow { background: #ffeb3b; box-shadow: 0 0 15px #ffeb3b; }
-		body.lights-on #bulb_red { background: #f44336; box-shadow: 0 0 15px #f44336; }
-		body.lights-on #bulb_blue { background: #2196f3; box-shadow: 0 0 15px #2196f3; }
-		body.lights-on #bulb_green { background: #4caf50; box-shadow: 0 0 15px #4caf50; }
-		body.lights-on #bulb_pink { background: #e91e63; box-shadow: 0 0 15px #e91e63; }
-		body.lights-on #bulb_orange { background: #ff9800; box-shadow: 0 0 15px #ff9800; }
+		body.lights-on #bulb_yellow { background: #ffca28; box-shadow: 0 0 15px #ffca28; }
+		body.lights-on #bulb_red { background: #ff1a40; box-shadow: 0 0 15px #ff1a40; }
+		body.lights-on #bulb_blue { background: #42a5f5; box-shadow: 0 0 15px #42a5f5; }
+		body.lights-on #bulb_green { background: #66bb6a; box-shadow: 0 0 15px #66bb6a; }
+		body.lights-on #bulb_pink { background: #ec407a; box-shadow: 0 0 15px #ec407a; }
+		body.lights-on #bulb_orange { background: #ffa726; box-shadow: 0 0 15px #ffa726; }
 
-		.banner-container {
-			margin-top: 20px;
-			display: none;
-			animation: fadeIn 1s forwards;
-		}
-		.banner-text {
-			font-size: 2.5rem;
-			color: #ff1a40;
-			text-shadow: 0 0 20px #ff0033;
-			font-weight: bold;
-		}
+		.banner-container { margin-top: 20px; display: none; animation: fadeIn 1s forwards; }
+		.banner-text { font-size: 2.5rem; font-weight: bold; }
 
 		/* Floating Background Balloons */
 		.flying-balloon-container {
-			position: fixed;
-			width: 100%;
-			height: 100%;
-			top: 0;
-			left: 0;
-			overflow: hidden;
-			pointer-events: none;
-			z-index: 1;
+			position: fixed; width: 100%; height: 100%; top: 0; left: 0;
+			overflow: hidden; pointer-events: none; z-index: 1;
 		}
 		.silver-red-balloon {
-			position: absolute;
-			bottom: -100px;
-			width: 32px; 
-			height: 42px;
+			position: absolute; bottom: -100px; width: 32px; height: 42px;
 			border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
-			background: radial-gradient(circle at 30% 25%, #ffffff 0%, #e6e6e6 12%, #cc0029 35%, #50000f 100%);
-			box-shadow: inset -2px -2px 6px rgba(0,0,0,0.6), 0 0 12px rgba(255, 255, 255, 0.4);
+			background: radial-gradient(circle at 30% 25%, #ffffff 0%, #ffccd5 25%, #ff1a40 70%, #b30024 100%);
+			box-shadow: inset -2px -2px 6px rgba(0,0,0,0.15), 0 5px 12px rgba(255, 26, 64, 0.25);
 			animation: floatUp 7s linear infinite;
 		}
 		@keyframes floatUp {
@@ -209,103 +274,58 @@
 		}
 
 		/* =========================================
-		   4. RED VELVET CAKE & CANDLE
+		   4. CAKE & CANDLES
 		   ========================================= */
-		.cake-cover {
-			display: none;
-			margin-top: 20px;
-			margin-bottom: 20px;
-			animation: fadeIn 1s forwards;
-		}
+		.cake-cover { display: none; margin-top: 20px; margin-bottom: 20px; animation: fadeIn 1s forwards; }
 		@keyframes fadeIn {
 			from { opacity: 0; transform: translateY(20px); }
 			to { opacity: 1; transform: translateY(0); }
 		}
 		.cake-container {
-			position: relative;
-			width: 180px;
-			height: 140px;
-			margin: 0 auto;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: flex-end;
+			position: relative; width: 180px; height: 140px; margin: 0 auto;
+			display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
 		}
-		
-		.candle {
-			position: relative;
-			width: 10px;
-			height: 35px;
-			background: linear-gradient(to right, #ffffff, #d9d9d9);
-			border-radius: 3px;
-			z-index: 3;
-			margin-bottom: -2px;
-		}
+		.candle-group { display: flex; justify-content: space-between; width: 70px; z-index: 3; margin-bottom: -2px; }
+		.candle { position: relative; width: 8px; height: 35px; background: linear-gradient(to right, #ffffff, #e0e0e0); border-radius: 3px; border: 1px solid #ccc; }
 		.flame {
-			position: absolute;
-			top: -16px;
-			left: 50%;
-			transform: translateX(-50%);
-			width: 10px;
-			height: 18px;
+			position: absolute; top: -16px; left: 50%; transform: translateX(-50%);
+			width: 10px; height: 18px;
 			background: radial-gradient(ellipse at bottom, #fffa8b 0%, #ff9900 60%, rgba(255,0,0,0) 100%);
-			border-radius: 50% 50% 20% 20%;
-			box-shadow: 0 0 10px #ff9900, 0 0 18px #ff3300;
+			border-radius: 50% 50% 20% 20%; box-shadow: 0 0 10px #ff9900, 0 0 18px #ff3300;
 			animation: flicker 0.2s infinite alternate;
 		}
-		.flame.blown-out {
-			display: none;
-		}
-		.smoke {
-			display: none;
-			position: absolute;
-			top: -20px;
-			left: 50%;
-			transform: translateX(-50%);
-			width: 6px;
-			height: 20px;
-			background: rgba(220, 220, 220, 0.5);
-			border-radius: 10px;
-			filter: blur(2px);
-		}
-		.flame.blown-out + .smoke {
-			display: block;
-			animation: smokeRise 2s forwards;
-		}
+		.flame.blown-out { display: none; }
+		.smoke { display: none; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 6px; height: 20px; background: rgba(150, 150, 150, 0.5); border-radius: 10px; filter: blur(2px); }
+		.flame.blown-out + .smoke { display: block; animation: smokeRise 2s forwards; }
 
-		@keyframes flicker {
-			0% { transform: translateX(-50%) scale(1); }
-			100% { transform: translateX(-50%) scale(1.15) rotate(2deg); }
-		}
-		@keyframes smokeRise {
-			0% { opacity: 0.8; transform: translateX(-50%) translateY(0) scale(1); }
-			100% { opacity: 0; transform: translateX(-50%) translateY(-25px) scale(2); }
-		}
+		@keyframes flicker { 0% { transform: translateX(-50%) scale(1); } 100% { transform: translateX(-50%) scale(1.15) rotate(2deg); } }
+		@keyframes smokeRise { 0% { opacity: 0.8; transform: translateX(-50%) translateY(0) scale(1); } 100% { opacity: 0; transform: translateX(-50%) translateY(-25px) scale(2); } }
 
-		/* Cake Layers */
 		.cake-layer { width: 100%; border-radius: 6px 6px 0 0; }
-		.layer-top {
-			height: 30px; width: 130px; background: #7a0016;
-			border-top: 5px solid #fff5f6; box-shadow: inset 0 -3px 0 #4a000e;
-		}
-		.layer-middle {
-			height: 30px; width: 155px; background: #7a0016;
-			border-top: 4px solid #fff5f6; box-shadow: inset 0 -3px 0 #4a000e;
-		}
-		.layer-bottom {
-			height: 30px; width: 180px; background: #7a0016;
-			border-top: 4px solid #fff5f6; box-shadow: 0 6px 15px rgba(0,0,0,0.8), inset 0 -3px 0 #4a000e;
-		}
+		.layer-top { height: 30px; width: 130px; background: #d60029; border-top: 5px solid #ffffff; box-shadow: inset 0 -3px 0 #a3001f; }
+		.layer-middle { height: 30px; width: 155px; background: #d60029; border-top: 4px solid #ffffff; box-shadow: inset 0 -3px 0 #a3001f; }
+		.layer-bottom { height: 30px; width: 180px; background: #d60029; border-top: 4px solid #ffffff; box-shadow: 0 6px 15px rgba(214,0,41,0.25), inset 0 -3px 0 #a3001f; }
 
 		/* =========================================
-		   5. DANCING TEDDY BEAR (GIF STYLE DANCE)
+		   5. SPORTS CAR EFFECT
+		   ========================================= */
+		.sports-car {
+			position: fixed; bottom: 80px; left: -150px; font-size: 3rem; z-index: 90;
+			pointer-events: none; filter: drop-shadow(0 4px 8px rgba(255, 26, 64, 0.4));
+		}
+		.sports-car.drive { animation: carDrive 5s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+		@keyframes carDrive { 0% { left: -150px; transform: scaleX(1); } 50% { left: 50vw; } 100% { left: 105vw; transform: scaleX(1); } }
+
+		/* =========================================
+		   6. DANCING TEDDIES (MAIN & SMALL SIDEKICK)
 		   ========================================= */
 		.teddy-wrapper {
 			margin-top: 15px;
 			margin-bottom: 15px;
-			display: none; /* Hidden initially, shown on message start */
+			display: none;
 			justify-content: center;
-			align-items: center;
+			align-items: flex-end;
+			gap: 15px;
 			z-index: 10;
 			position: relative;
 		}
@@ -314,6 +334,7 @@
 			animation: fadeIn 0.8s ease-in forwards;
 		}
 
+		/* Main Teddy Bear */
 		.teddy-bear {
 			position: relative;
 			width: 100px;
@@ -322,171 +343,81 @@
 			animation: gifBodyGroove 0.7s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
 		}
 
-		.teddy-head {
-			position: absolute;
-			top: 0; left: 20px;
-			width: 60px; height: 52px;
-			background: #e2688c;
-			border: 3px solid #000;
-			border-radius: 50%;
-			z-index: 5;
-			transform-origin: bottom center;
-			animation: gifHeadTilt 0.7s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
-		}
-		.teddy-ear {
-			position: absolute;
-			top: -6px; width: 22px; height: 22px;
-			background: #e2688c; border: 3px solid #000; border-radius: 50%;
-		}
-		.teddy-ear.left { left: -4px; }
-		.teddy-ear.right { right: -4px; }
-		.teddy-ear-inner {
-			position: absolute;
-			top: 3px; left: 3px;
-			width: 10px; height: 10px;
-			background: #ffffff; border-radius: 50%;
+		/* Small Sidekick Teddy Bear */
+		.teddy-bear.small-sidekick {
+			transform: scale(0.65);
+			margin-bottom: -15px;
+			animation-delay: 0.2s; /* Slight offset for natural dancing sync */
 		}
 
-		.teddy-snout {
-			position: absolute;
-			bottom: 3px; left: 12px;
-			width: 30px; height: 22px;
-			background: #ffffff; border: 2px solid #000; border-radius: 50%;
+		.teddy-head {
+			position: absolute; top: 0; left: 20px; width: 60px; height: 52px;
+			background: #ff4d6d; border: 3px solid #b30024; border-radius: 50%;
+			z-index: 5; transform-origin: bottom center;
+			animation: gifHeadTilt 0.7s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
 		}
-		.teddy-nose {
-			position: absolute;
-			top: 3px; left: 9px;
-			width: 8px; height: 6px;
-			background: #401a08; border-radius: 50%;
-		}
-		.teddy-eye {
-			position: absolute;
-			top: 16px; width: 12px; height: 5px;
-			border-top: 3px solid #000;
-			border-radius: 50%;
-		}
+		.teddy-ear { position: absolute; top: -6px; width: 22px; height: 22px; background: #ff4d6d; border: 3px solid #b30024; border-radius: 50%; }
+		.teddy-ear.left { left: -4px; }
+		.teddy-ear.right { right: -4px; }
+		.teddy-ear-inner { position: absolute; top: 3px; left: 3px; width: 10px; height: 10px; background: #ffffff; border-radius: 50%; }
+
+		.teddy-snout { position: absolute; bottom: 3px; left: 12px; width: 30px; height: 22px; background: #ffffff; border: 2px solid #b30024; border-radius: 50%; }
+		.teddy-nose { position: absolute; top: 3px; left: 9px; width: 8px; height: 6px; background: #b30024; border-radius: 50%; }
+		.teddy-eye { position: absolute; top: 16px; width: 12px; height: 5px; border-top: 3px solid #b30024; border-radius: 50%; }
 		.teddy-eye.left { left: 10px; }
 		.teddy-eye.right { right: 10px; }
 
 		.teddy-body {
-			position: absolute;
-			top: 44px; left: 22px;
-			width: 56px; height: 60px;
-			background: #e2688c;
-			border: 3px solid #000;
-			border-radius: 50% 50% 45% 45%;
-			z-index: 3;
+			position: absolute; top: 44px; left: 22px; width: 56px; height: 60px;
+			background: #ff4d6d; border: 3px solid #b30024; border-radius: 50% 50% 45% 45%; z-index: 3;
 		}
-		.teddy-belly {
-			position: absolute;
-			top: 12px; left: 11px;
-			width: 28px; height: 32px;
-			background: #ffffff; border-radius: 50%;
-		}
+		.teddy-belly { position: absolute; top: 12px; left: 11px; width: 28px; height: 32px; background: #ffffff; border-radius: 50%; }
 
 		.teddy-arm {
-			position: absolute;
-			top: 48px; width: 20px; height: 30px;
-			background: #e2688c; border: 3px solid #000; border-radius: 12px;
+			position: absolute; top: 48px; width: 20px; height: 30px;
+			background: #ff4d6d; border: 3px solid #b30024; border-radius: 12px;
 			z-index: 4; transform-origin: top center;
 		}
-		.teddy-arm.left {
-			left: 6px;
-			animation: gifArmDanceLeft 0.7s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
-		}
-		.teddy-arm.right {
-			right: 6px;
-			animation: gifArmDanceRight 0.7s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
-		}
+		.teddy-arm.left { left: 6px; animation: gifArmDanceLeft 0.7s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95); }
+		.teddy-arm.right { right: 6px; animation: gifArmDanceRight 0.7s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95); }
 
-		.teddy-leg {
-			position: absolute;
-			bottom: 0px; width: 24px; height: 20px;
-			background: #e2688c; border: 3px solid #000; border-radius: 50%;
-			z-index: 2;
-		}
+		.teddy-leg { position: absolute; bottom: 0px; width: 24px; height: 20px; background: #ff4d6d; border: 3px solid #b30024; border-radius: 50%; z-index: 2; }
 		.teddy-leg.left { left: 18px; }
 		.teddy-leg.right { right: 18px; }
 
-		/* GIF-Style Dance Keyframes */
 		@keyframes gifBodyGroove {
 			0% { transform: translateY(0) rotate(-10deg) scaleX(0.95); }
 			50% { transform: translateY(-8px) rotate(0deg) scaleY(1.05); }
 			100% { transform: translateY(0) rotate(10deg) scaleX(0.95); }
 		}
-		@keyframes gifHeadTilt {
-			0% { transform: rotate(12deg); }
-			100% { transform: rotate(-12deg); }
-		}
-		@keyframes gifArmDanceLeft {
-			0% { transform: rotate(40deg) translateY(-2px); }
-			100% { transform: rotate(-50deg) translateY(2px); }
-		}
-		@keyframes gifArmDanceRight {
-			0% { transform: rotate(-50deg) translateY(2px); }
-			100% { transform: rotate(40deg) translateY(-2px); }
-		}
+		@keyframes gifHeadTilt { 0% { transform: rotate(12deg); } 100% { transform: rotate(-12deg); } }
+		@keyframes gifArmDanceLeft { 0% { transform: rotate(40deg) translateY(-2px); } 100% { transform: rotate(-50deg) translateY(2px); } }
+		@keyframes gifArmDanceRight { 0% { transform: rotate(-50deg) translateY(2px); } 100% { transform: rotate(40deg) translateY(-2px); } }
 
 		/* =========================================
-		   6. HORIZONTAL MESSAGE LINE
+		   7. HORIZONTAL MESSAGE LINE
 		   ========================================= */
-		.message-wrapper {
-			margin-top: 15px;
-			position: relative;
-			min-height: 75px;
-			z-index: 10;
-		}
-		
+		.message-wrapper { margin-top: 15px; position: relative; min-height: 75px; z-index: 10; }
 		.message-line-frame {
-			position: relative;
-			width: 90%;
-			max-width: 750px;
-			height: 70px;
-			margin: 0 auto;
-			border-top: 2px solid #ff1a40;
-			border-bottom: 2px solid #ff1a40;
-			box-shadow: 0 0 15px rgba(255, 0, 51, 0.4);
-			background: rgba(15, 0, 3, 0.7);
-			border-radius: 8px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			overflow: hidden;
-			opacity: 0;
-			visibility: hidden;
-			transition: opacity 0.5s ease, visibility 0.5s ease;
+			position: relative; width: 90%; max-width: 750px; height: 70px; margin: 0 auto;
+			border-top: 2px solid #ff1a40; border-bottom: 2px solid #ff1a40;
+			box-shadow: 0 4px 15px rgba(255, 26, 64, 0.2); border-radius: 8px;
+			display: flex; align-items: center; justify-content: center; overflow: hidden;
+			opacity: 0; visibility: hidden;
+			transition: opacity 0.5s ease, visibility 0.5s ease, transform 2s cubic-bezier(0.25, 1, 0.5, 1);
+			cursor: pointer;
 		}
-
-		.message-line-frame.visible {
-			opacity: 1;
-			visibility: visible;
-		}
+		.message-line-frame.visible { opacity: 1; visibility: visible; }
+		.message-line-frame.bmw-slide { animation: bmwSlide 2s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+		@keyframes bmwSlide { 0% { transform: translateX(-100vw); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
 
 		.story-line {
-			font-size: 1.8rem;
-			font-weight: 700;
-			color: #ffe6ea;
-			text-shadow: 0 0 12px #ff0033, 0 0 20px rgba(255, 0, 51, 0.8);
-			opacity: 0;
-			visibility: hidden;
-			transform: scale(0.85);
-			transition: opacity 0.6s ease, transform 0.6s ease, visibility 0.6s;
-			position: absolute;
-			text-align: center;
-			width: 95%;
-			margin: 0;
+			font-size: 1.8rem; font-weight: 700; opacity: 0; visibility: hidden;
+			transform: scale(0.85); transition: opacity 0.6s ease, transform 0.6s ease, visibility 0.6s;
+			position: absolute; text-align: center; width: 95%; margin: 0;
 		}
-		.story-line.active {
-			opacity: 1;
-			visibility: visible;
-			transform: scale(1);
-		}
-		.story-line strong {
-			color: #ff1a40;
-			font-size: 2.1rem;
-			text-transform: uppercase;
-			text-shadow: 0 0 20px #ff0033;
-		}
+		.story-line.active { opacity: 1; visibility: visible; transform: scale(1); }
+		.story-line strong { color: #ff1a40; font-size: 2.1rem; text-transform: uppercase; }
 
 		@media (max-width: 768px) {
 			.story-line { font-size: 1.3rem; }
@@ -494,40 +425,79 @@
 			.message-line-frame { height: 65px; }
 		}
 
-		/* Sequential Timeline Button at Bottom */
+		/* Bottom Navigation / Actions */
 		.navbar-fixed-bottom {
-			background: rgba(10, 0, 2, 0.95);
-			border-top: 1px solid #ff1a40;
-			padding: 15px 0;
-			z-index: 100;
-			min-height: 80px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
+			padding: 15px 0; z-index: 100; min-height: 80px;
+			display: flex; align-items: center; justify-content: center;
 		}
 		.btn-custom {
-			background: linear-gradient(135deg, #2a0007, #50000e);
-			color: #fff;
-			border: 1px solid #ff1a40;
-			border-radius: 25px;
-			font-weight: bold;
-			font-size: 1.2rem;
-			padding: 10px 24px;
-			box-shadow: 0 0 15px rgba(255, 0, 51, 0.5);
+			color: #fff; border-radius: 25px; font-weight: bold; font-size: 1.2rem;
+			padding: 10px 24px; box-shadow: 0 4px 15px rgba(255, 26, 64, 0.4);
 			transition: all 0.3s ease;
 		}
 		.btn-custom:hover, .btn-custom:focus {
-			color: #fff;
-			background: #ff0033;
-			box-shadow: 0 0 22px #ff0033;
-			transform: translateY(-2deg);
+			color: #fff; transform: translateY(-2deg);
 		}
+
+		/* =========================================
+		   8. MODALS & VIDEO PLAYER
+		   ========================================= */
+		.chess-modal, .ludo-modal, .gift-modal, .shinchan-modal {
+			display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+			z-index: 200000; align-items: center; justify-content: center; flex-direction: column;
+		}
+		.chess-modal { background: rgba(0, 0, 0, 0.85); }
+		.ludo-modal { background: rgba(0, 0, 0, 0.92); }
+		.gift-modal { background: rgba(0, 0, 0, 0.92); }
+		.shinchan-modal { background: rgba(0, 0, 0, 0.95); }
+
+		/* Shinchan Video Styling */
+		.shinchan-video-container {
+			max-width: 90vw;
+			max-height: 70vh;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		.shinchan-video-container video {
+			border: 3px solid #ff1a40;
+			border-radius: 12px;
+			box-shadow: 0 0 25px #ff0033;
+			max-width: 100%;
+			max-height: 65vh;
+		}
+		.shinchan-btn-container { display: none; margin-top: 15px; }
+
+		/* Chess Puzzle */
+		.chess-card { border: 2px solid #ff1a40; border-radius: 12px; padding: 20px; text-align: center; max-width: 320px; width: 90%; }
+		.chess-board { display: grid; grid-template-columns: repeat(2, 70px); grid-template-rows: repeat(2, 70px); gap: 4px; margin: 15px auto; justify-content: center; }
+		.chess-square { width: 70px; height: 70px; font-size: 2.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 6px; user-select: none; }
+		.chess-square.white { background: #e0e0e0; color: #000; }
+		.chess-square.black { background: #4a000e; color: #fff; }
+		.chess-square.selected { border: 3px solid #ff0033; }
+
+		/* Ludo */
+		.ludo-card { border: 2px solid #ff1a40; border-radius: 15px; padding: 20px; text-align: center; max-width: 360px; width: 90%; }
+		.ludo-track { display: flex; justify-content: space-between; align-items: center; background: #ffe6eb; border: 2px solid #ff1a40; border-radius: 10px; padding: 10px; margin: 20px 0; }
+		.ludo-cell { width: 45px; height: 45px; border-radius: 8px; background: #ff4d6d; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; border: 1px solid #d60029; color: white; }
+		.ludo-cell.home { background: #00b359; border-color: #008040; }
+		.dice-btn { font-size: 2.2rem; background: #ff1a40; border: none; border-radius: 12px; padding: 10px 20px; cursor: pointer; }
+
+		/* Gift Box & Fur Tape */
+		.gift-wrapper { position: relative; width: 320px; min-height: 250px; border: 2px solid #ff1a40; border-radius: 16px; display: flex; align-items: center; justify-content: center; padding: 25px; text-align: center; overflow: hidden; }
+		.fur-tape { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #ff1a40; border: 3px dashed #ffffff; border-radius: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; transition: transform 0.8s ease, opacity 0.8s ease; }
+		.fur-tape::before { content: '🎁 TAP TO UNWRAP FUR TAPE 🎁'; color: #ffffff; font-weight: bold; font-size: 1.1rem; }
+		.fur-tape.unwrapped { transform: translateY(-120%) rotate(10deg); opacity: 0; pointer-events: none; }
+		.final-message-text { font-size: 1.25rem; line-height: 1.6; font-weight: 600; }
 	</style>
 </head>
 
-<body>
+<body class="light-mode">
 
-	<!-- AUDIO ELEMENTS FOR SONG 1 AND SONG 2 -->
+	<!-- THEME TOGGLE BUTTON -->
+	<button class="theme-toggle-btn" id="theme-btn" onclick="toggleTheme()">🌙 Dark Theme</button>
+
+	<!-- AUDIO ELEMENTS -->
 	<audio id="bg-music-1" loop preload="auto">
 		<source src="song1.mp3" type="audio/mpeg">
 	</audio>
@@ -535,6 +505,16 @@
 	<audio id="bg-music-2" loop preload="auto">
 		<source src="song2.mp3" type="audio/mpeg">
 	</audio>
+
+	<!-- FLOATING HEARTS / BATS -->
+	<div class="bat-container" id="bat-container">
+		<div class="bat" style="animation-delay: 0s;">❤️</div>
+		<div class="bat" style="animation-delay: 4s;">💖</div>
+		<div class="bat" style="animation-delay: 8s;">❤️</div>
+	</div>
+
+	<!-- DRIVING SPORTS CAR EFFECT -->
+	<div class="sports-car" id="racing-car">🏎️💨</div>
 
 	<!-- 1. INTRO SCREEN -->
 	<div id="intro-screen">
@@ -569,13 +549,14 @@
 			</div>
 		</div>
 
-		<!-- RED VELVET CAKE -->
+		<!-- CAKE WITH 3 CANDLES -->
 		<div class="row cake-cover" id="cake-cover">
 			<div class="col-md-12">
 				<div class="cake-container">
-					<div class="candle">
-						<div class="flame" id="flame"></div>
-						<div class="smoke"></div>
+					<div class="candle-group">
+						<div class="candle"><div class="flame flame-item"></div><div class="smoke"></div></div>
+						<div class="candle"><div class="flame flame-item"></div><div class="smoke"></div></div>
+						<div class="candle"><div class="flame flame-item"></div><div class="smoke"></div></div>
 					</div>
 					<div class="cake-layer layer-top"></div>
 					<div class="cake-layer layer-middle"></div>
@@ -584,21 +565,34 @@
 			</div>
 		</div>
 
-		<!-- DANCING TEDDY BEAR (SHOWN WHEN MESSAGE STARTS) -->
+		<!-- MAIN DANCING TEDDY BEAR & SMALL SIDEKICK TEDDY -->
 		<div class="row teddy-wrapper" id="teddy-wrapper">
+			<!-- Main Dancing Teddy -->
 			<div class="teddy-bear">
 				<div class="teddy-head">
 					<div class="teddy-ear left"><div class="teddy-ear-inner"></div></div>
 					<div class="teddy-ear right"><div class="teddy-ear-inner"></div></div>
 					<div class="teddy-eye left"></div>
 					<div class="teddy-eye right"></div>
-					<div class="teddy-snout">
-						<div class="teddy-nose"></div>
-					</div>
+					<div class="teddy-snout"><div class="teddy-nose"></div></div>
 				</div>
-				<div class="teddy-body">
-					<div class="teddy-belly"></div>
+				<div class="teddy-body"><div class="teddy-belly"></div></div>
+				<div class="teddy-arm left"></div>
+				<div class="teddy-arm right"></div>
+				<div class="teddy-leg left"></div>
+				<div class="teddy-leg right"></div>
+			</div>
+
+			<!-- Small Sidekick Dancing Teddy -->
+			<div class="teddy-bear small-sidekick">
+				<div class="teddy-head">
+					<div class="teddy-ear left"><div class="teddy-ear-inner"></div></div>
+					<div class="teddy-ear right"><div class="teddy-ear-inner"></div></div>
+					<div class="teddy-eye left"></div>
+					<div class="teddy-eye right"></div>
+					<div class="teddy-snout"><div class="teddy-nose"></div></div>
 				</div>
+				<div class="teddy-body"><div class="teddy-belly"></div></div>
 				<div class="teddy-arm left"></div>
 				<div class="teddy-arm right"></div>
 				<div class="teddy-leg left"></div>
@@ -609,7 +603,7 @@
 		<!-- HORIZONTAL WISHING MESSAGE LINE FRAME -->
 		<div class="row message-wrapper">
 			<div class="col-md-12">
-				<div class="message-line-frame" id="story-container">
+				<div class="message-line-frame" id="story-container" onclick="dismissChessAndShowWish()">
 					<p class="story-line">Today is...</p>
 					<p class="story-line">as beautiful as other days</p>
 					<p class="story-line">but you realize</p>
@@ -661,9 +655,68 @@
 			</div>
 		</div>
 
+		<!-- SHINCHAN WISHING BUTTON CONTAINER -->
+		<div class="row shinchan-btn-container" id="shinchan-btn-container">
+			<div class="col-md-12 text-center">
+				<button class="btn btn-custom" onclick="openShinchanVideo()">Watch Shinchan's Wish 🎬</button>
+			</div>
+		</div>
+
 	</div>
 
-	<!-- 3. TIMELINE SINGLE BUTTON AT BOTTOM -->
+	<!-- CHESS PUZZLE MODAL -->
+	<div class="chess-modal" id="chess-modal">
+		<div class="chess-card">
+			<h4 style="color: #ff1a40;">♟️ Solve Chess Puzzle ♟️</h4>
+			<p style="font-size: 0.9rem; opacity: 0.8;">Deliver Checkmate: Move White Queen (♕) to take Black King (♚)!</p>
+			<div class="chess-board">
+				<div class="chess-square white" id="sq-0" onclick="selectPiece('sq-0', '♕')">♕</div>
+				<div class="chess-square black" id="sq-1" onclick="movePiece('sq-1')"></div>
+				<div class="chess-square black" id="sq-2"></div>
+				<div class="chess-square white" id="sq-3" onclick="movePiece('sq-3')">♚</div>
+			</div>
+			<p id="chess-status" style="color: #ff1a40; font-weight: bold;"></p>
+		</div>
+	</div>
+
+	<!-- SHINCHAN VIDEO MODAL (REPLACED WITH ATTACHED LOCAL VIDEO) -->
+	<div class="shinchan-modal" id="shinchan-modal">
+		<div class="shinchan-video-container">
+			<video id="shinchan-video" controls playsinline>
+				<source src="shinchan_wish.mp4" type="video/mp4">
+				Your browser does not support the video tag.
+			</video>
+		</div>
+		<button class="btn btn-custom" style="margin-top: 15px;" onclick="closeShinchanModal()">Close Video ✖</button>
+	</div>
+
+	<!-- LUDO MINI GAME MODAL -->
+	<div class="ludo-modal" id="ludo-modal">
+		<div class="ludo-card">
+			<h3 style="color: #ff1a40; margin-top:0;">🎲 Ultimate Ludo Match 🎲</h3>
+			<p style="opacity: 0.8; font-size: 0.95rem;">Roll a <strong>6</strong> to reach the Winning Home Spot!</p>
+			<div class="ludo-track">
+				<div class="ludo-cell" id="ludo-start">🔴</div>
+				<div class="ludo-cell" id="ludo-mid1"></div>
+				<div class="ludo-cell" id="ludo-mid2"></div>
+				<div class="ludo-cell home" id="ludo-home">🏆</div>
+			</div>
+			<p id="ludo-status" style="color: #ff1a40; font-weight: bold; min-height: 24px;">Tap the dice to roll!</p>
+			<button class="dice-btn" onclick="rollLudoDice()">🎲</button>
+		</div>
+	</div>
+
+	<!-- GIFT BOX WITH FUR TAPE & FINAL MESSAGE -->
+	<div class="gift-modal" id="gift-modal">
+		<div class="gift-wrapper">
+			<div class="fur-tape" id="fur-tape" onclick="unwrapGift()"></div>
+			<div class="final-message-text">
+				Happy Birthday Abhilash 🥳🥳🎊🎊💐🎂🍫, Kanha ji bless you, always stay blessed, happy and healthy 🙌🏻🎉🎉. Enjoy your day with fullest and my best wishes always with you 😌
+			</div>
+		</div>
+	</div>
+
+	<!-- TIMELINE SINGLE BUTTON AT BOTTOM -->
 	<div class="navbar navbar-fixed-bottom">
 		<div class="container text-center">
 			<button class="btn btn-custom" id="action-btn" onclick="nextStep()">Turn On Lights</button>
@@ -671,6 +724,37 @@
 	</div>
 
 	<script>
+		// --- 0. THEME SWITCHER (DARK / LIGHT BUTTON IN CORNER) ---
+		function toggleTheme() {
+			const body = document.body;
+			const themeBtn = document.getElementById('theme-btn');
+			const batContainer = document.getElementById('bat-container');
+
+			if (body.classList.contains('light-mode')) {
+				body.classList.remove('light-mode');
+				body.classList.add('dark-mode');
+				themeBtn.innerText = "☀️ Bright Theme";
+				
+				// Update floating elements to Dracula Bats
+				batContainer.innerHTML = `
+					<div class="bat" style="animation-delay: 0s;">🦇</div>
+					<div class="bat" style="animation-delay: 4s;">🦇</div>
+					<div class="bat" style="animation-delay: 8s;">🦇</div>
+				`;
+			} else {
+				body.classList.remove('dark-mode');
+				body.classList.add('light-mode');
+				themeBtn.innerText = "🌙 Dark Theme";
+				
+				// Update floating elements to Hearts
+				batContainer.innerHTML = `
+					<div class="bat" style="animation-delay: 0s;">❤️</div>
+					<div class="bat" style="animation-delay: 4s;">💖</div>
+					<div class="bat" style="animation-delay: 8s;">❤️</div>
+				`;
+			}
+		}
+
 		// --- 1. INTRO BALLOON POPPING ---
 		const introScreen = document.getElementById('intro-screen');
 		const balloonElem = document.getElementById('current-balloon');
@@ -682,12 +766,10 @@
 		let isProcessingPop = false;
 
 		const balloonColors = [
-			'radial-gradient(circle at 35% 30%, #ff4d6d, #800016)',
-			'radial-gradient(circle at 35% 30%, #4da6ff, #003380)',
-			'radial-gradient(circle at 35% 30%, #ffcc00, #806600)',
-			'radial-gradient(circle at 35% 30%, #4dff88, #00802b)',
-			'radial-gradient(circle at 35% 30%, #cc66ff, #5900b3)',
-			'radial-gradient(circle at 35% 30%, #ff9933, #803d00)'
+			'radial-gradient(circle at 35% 30%, #ff4d6d, #b30024)',
+			'radial-gradient(circle at 35% 30%, #ffffff, #e6002e)',
+			'radial-gradient(circle at 35% 30%, #ff8095, #cc0029)',
+			'radial-gradient(circle at 35% 30%, #ff1a40, #800014)'
 		];
 
 		function setBalloonStyle(num) {
@@ -712,7 +794,7 @@
 				if (currentNumber < totalBalloons) {
 					currentNumber++;
 					setBalloonStyle(currentNumber);
-					introStatus.innerText = `Tap balloon ${currentNumber} of ${totalBalloons}!`;
+					introStatus.innerText = `Tap balloon ${currentNumber} of${totalBalloons}!`;
 					isProcessingPop = false;
 				} else {
 					skipIntro();
@@ -746,7 +828,8 @@
 				stepIndex++;
 			} else if (stepIndex === 2) {
 				showBanner();
-				actionBtn.innerText = "Fly Red & Silver Balloons 🎈";
+				triggerCarEffect();
+				actionBtn.innerText = "Fly Red & White Balloons 🎈";
 				stepIndex++;
 			} else if (stepIndex === 3) {
 				releaseBalloons();
@@ -754,7 +837,7 @@
 				stepIndex++;
 			} else if (stepIndex === 4) {
 				showCake();
-				actionBtn.innerText = "Blow Candle 🕯️";
+				actionBtn.innerText = "Blow 3 Candles 🕯️";
 				stepIndex++;
 			} else if (stepIndex === 5) {
 				blowCandle();
@@ -764,17 +847,23 @@
 			}
 		}
 
-		// --- 3. LIGHTING CONTROL ---
+		// --- CAR EFFECT TRIGGER ---
+		function triggerCarEffect() {
+			const car = document.getElementById('racing-car');
+			car.classList.add('drive');
+		}
+
+		// --- LIGHTING CONTROL ---
 		function toggleLights() {
 			document.body.classList.add('lights-on');
 		}
 
-		// --- 4. BANNER CONTROL ---
+		// --- BANNER CONTROL ---
 		function showBanner() {
 			document.getElementById('banner-container').style.display = 'block';
 		}
 
-		// --- 5. SONG PLAYER SYSTEM ---
+		// --- SONG PLAYER SYSTEM ---
 		function playSong1() {
 			const music1 = document.getElementById('bg-music-1');
 			music1.play().catch(e => console.log('Playback error:', e));
@@ -790,7 +879,7 @@
 			music2.play().catch(e => console.log('Playback error:', e));
 		}
 
-		// --- 6. FLOATING RED & SILVER BALLOONS ---
+		// --- FLOATING BALLOONS ---
 		function releaseBalloons() {
 			const flyingContainer = document.getElementById('flying-container');
 			for (let i = 0; i < 25; i++) {
@@ -809,38 +898,78 @@
 			}
 		}
 
-		// --- 7. SHOW CAKE ---
+		// --- SHOW CAKE ---
 		let isCandleBlown = false;
 
 		function showCake() {
 			document.getElementById('cake-cover').style.display = 'block';
 		}
 
-		// --- 8. BLOW CANDLE, START SONG 2, SHOW TEDDY BEAR & ANIMATED STORY ---
+		// --- BLOW 3 CANDLES & TRIGGER CHESS PUZZLE ---
 		function blowCandle() {
 			if (isCandleBlown) return;
 			isCandleBlown = true;
 
-			// Extinguish Flame
-			const flame = document.getElementById('flame');
-			flame.classList.add('blown-out');
+			const flames = document.querySelectorAll('.flame-item');
+			flames.forEach(flame => flame.classList.add('blown-out'));
 
-			// Switch Music to Song 2
 			playSong2AndPauseSong1();
 
-			// Reveal Teddy Bear & Start GIF Dance
 			const teddyWrapper = document.getElementById('teddy-wrapper');
 			teddyWrapper.classList.add('active');
 
-			// Show Message Line Frame
+			setTimeout(() => {
+				openChessPuzzle();
+			}, 1000);
+		}
+
+		// --- CHESS PUZZLE SYSTEM ---
+		let selectedPiece = null;
+
+		function openChessPuzzle() {
+			document.getElementById('chess-modal').style.display = 'flex';
+		}
+
+		function selectPiece(sqId, piece) {
+			selectedPiece = piece;
+			document.getElementById(sqId).classList.add('selected');
+			document.getElementById('chess-status').innerText = "Queen selected! Now tap on the King to Checkmate!";
+		}
+
+		function movePiece(targetSqId) {
+			if (selectedPiece && targetSqId === 'sq-3') {
+				document.getElementById('sq-0').innerText = '';
+				document.getElementById('sq-3').innerText = '♕';
+				document.getElementById('chess-status').innerText = "Checkmate! Puzzle Solved 🎉";
+
+				setTimeout(() => {
+					completeChessPuzzle();
+				}, 1200);
+			} else if (selectedPiece) {
+				document.getElementById('chess-status').innerText = "Invalid move! Tap on the King (sq-3) to checkmate.";
+			}
+		}
+
+		function completeChessPuzzle() {
+			document.getElementById('chess-modal').style.display = 'none';
+			
 			const storyContainer = document.getElementById('story-container');
-			storyContainer.classList.add('visible');
+			storyContainer.classList.add('visible', 'bmw-slide');
 
 			setTimeout(() => {
 				startStoryAnimation();
-			}, 500);
+			}, 2000);
 		}
 
+		function dismissChessAndShowWish() {
+			const chessModal = document.getElementById('chess-modal');
+			if (chessModal.style.display === 'flex') {
+				chessModal.style.display = 'none';
+				completeChessPuzzle();
+			}
+		}
+
+		// --- ANIMATION STOP AT LAST WISH LINE & TRIGGER SHINCHAN VIDEO ---
 		function startStoryAnimation() {
 			const storyLines = document.querySelectorAll('.story-line');
 			let index = 0;
@@ -854,14 +983,87 @@
 					storyLines[index].classList.add('active');
 					index++;
 
-					// Stop at the last line "a very happy birthday Abhilash! 🎂"
 					if (index < storyLines.length) {
 						setTimeout(showNextLine, 2200);
+					} else {
+						setTimeout(triggerShinchanFlow, 2500);
 					}
 				}
 			}
 
 			showNextLine();
+		}
+
+		// --- SHINCHAN FLOW AT END OF MESSAGE ---
+		function triggerShinchanFlow() {
+			const music2 = document.getElementById('bg-music-2');
+			music2.pause();
+			music2.currentTime = 0;
+
+			const storyContainer = document.getElementById('story-container');
+			storyContainer.style.display = 'none';
+
+			document.getElementById('shinchan-btn-container').style.display = 'block';
+
+			openShinchanVideo();
+		}
+
+		function openShinchanVideo() {
+			const shinchanModal = document.getElementById('shinchan-modal');
+			const video = document.getElementById('shinchan-video');
+			shinchanModal.style.display = 'flex';
+			video.play().catch(e => console.log('Video autoplay prevented:', e));
+		}
+
+		function closeShinchanModal() {
+			const shinchanModal = document.getElementById('shinchan-modal');
+			const video = document.getElementById('shinchan-video');
+			video.pause();
+			video.currentTime = 0;
+			shinchanModal.style.display = 'none';
+			
+			// Show Ludo Game after Shinchan Video
+			openLudoGame();
+		}
+
+		// --- LUDO MINI GAME LOGIC ---
+		function openLudoGame() {
+			document.getElementById('ludo-modal').style.display = 'flex';
+		}
+
+		function rollLudoDice() {
+			const ludoStatus = document.getElementById('ludo-status');
+			ludoStatus.innerText = "Rolling dice... 🎲";
+			
+			setTimeout(() => {
+				const roll = 6;
+				ludoStatus.innerText = `You rolled a ${roll}! WINNER! 🥳🎉`;
+				
+				document.getElementById('ludo-start').innerText = '';
+				document.getElementById('ludo-home').innerText = '🔴🏆';
+				
+				setTimeout(() => {
+					document.getElementById('ludo-modal').style.display = 'none';
+					openGiftModal();
+				}, 1500);
+			}, 600);
+		}
+
+		// --- GIFT UNBOXING & CONFETTI SHOWER ---
+		function openGiftModal() {
+			document.getElementById('gift-modal').style.display = 'flex';
+		}
+
+		function unwrapGift() {
+			const tape = document.getElementById('fur-tape');
+			tape.classList.add('unwrapped');
+
+			confetti({
+				particleCount: 50,
+				spread: 60,
+				origin: { y: 0.6 },
+				colors: ['#ffd700', '#ff1a40', '#ffffff', '#ff8095']
+			});
 		}
 	</script>
 </body>
